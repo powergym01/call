@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Calling Center</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+        .number-link {
+            color: green;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .number-link.clicked {
+            color: red;
+        }
+        .status-select {
+            padding: 5px;
+            border-radius: 4px;
+            font-size: 0.9em;
+            width: 100%;
+        }
+        .submit-btn {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            background-color: #28a745;
+            color: white;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+        .submit-btn:hover {
+            background-color: #218838;
+        }
+        @media (max-width: 600px) {
+            th, td {
+                font-size: 14px;
+            }
+            .container {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Client List</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Name</th>
+                <th>Mobile Number</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="client-table"></tbody>
+    </table>
+</div>
+
+<script>
+    // Client data
+    const clients = [
+        { name: "Akansha", number: "521540787" },
+        { name: "Deepika", number: "569213561" },
+        { name: "Jaseena", number: "528479132" },
+        { name: "Marietta", number: "568296839" },
+        { name: "Mr Altaf Surti", number: "566251009" },
+        { name: "Mr Domingo Fedilyn", number: "565894558" },
+        { name: "Mr Lawrence Pradeep", number: "502133652" },
+        { name: "Mr Nitin", number: "554792039" },
+        { name: "Mr Sajid", number: "505428100-556547323" },
+        { name: "Mr Umar Adijat", number: "523782911" },
+        { name: "Ms Anne", number: "559228261" },
+        { name: "Ms Emerlyn", number: "561882907" },
+        { name: "Ms Joanna Marie", number: "567736535" },
+        { name: "Ms Maria Hidalgo", number: "504632665" },
+        { name: "Ms Neelam", number: "567603666 / 505472329" },
+        { name: "Ms Sanita", number: "508490990" },
+        { name: "Ms Trupti", number: "502883671" },
+        { name: "Ramsha", number: "551036548" },
+        { name: "Sonia", number: "569669195" },
+        { name: "Murnol", number: "543071837" },
+        { name: "Shaikh Ali", number: "505931521" },
+        { name: "Chirag", number: "523243867" },
+        { name: "Abra", number: "564183694" },
+        { name: "Alphy", number: "553459678" },
+    ];
+
+    // Populate the table with client data
+    const table = document.getElementById("client-table");
+
+    clients.forEach((client, index) => {
+        const row = document.createElement("tr");
+
+        // Serial number
+        const noCell = document.createElement("td");
+        noCell.textContent = index + 1;
+
+        // Client name
+        const nameCell = document.createElement("td");
+        nameCell.textContent = client.name;
+
+        // Mobile number with click-to-call link
+        const numberCell = document.createElement("td");
+        const callLink = document.createElement("a");
+        callLink.href = `tel:${client.number}`;
+        callLink.classList.add("number-link");
+        callLink.textContent = client.number;
+        callLink.onclick = () => {
+            callLink.classList.add("clicked");
+        };
+        numberCell.appendChild(callLink);
+
+        // Status dropdown
+        const statusCell = document.createElement("td");
+        const select = document.createElement("select");
+        select.classList.add("status-select");
+        select.name = "status"; // Name for form submission
+
+        const options = [
+            { value: "coming", text: "Coming" },
+            { value: "not-coming", text: "Not Coming" },
+            { value: "call-not-connected", text: "Call Not Connected" }
+        ];
+
+        options.forEach(optionData => {
+            const option = document.createElement("option");
+            option.value = optionData.value;
+            option.textContent = optionData.text;
+            select.appendChild(option);
+        });
+
+        statusCell.appendChild(select);
+
+        // Submit button
+        const actionCell = document.createElement("td");
+        const form = document.createElement("form");
+        form.action = "https://script.google.com/macros/s/AKfycbzuHoxibc6qSfSzJQi-fqi2bnRFR_bAkARH2sY-wnCgK7AqSxEdtbQ9eskdN37uL1YMUw/exec";
+        form.method = "POST";
+        form.target = "_blank";
+
+        // Hidden input fields for form data
+        const hiddenNo = document.createElement("input");
+        hiddenNo.type = "hidden";
+        hiddenNo.name = "number"; // Input name for Google Form
+        hiddenNo.value = index + 1;
+        
+        const hiddenName = document.createElement("input");
+        hiddenName.type = "hidden";
+        hiddenName.name = "name"; // Input name for Google Form
+        hiddenName.value = client.name;
+
+        const hiddenMobile = document.createElement("input");
+        hiddenMobile.type = "hidden";
+        hiddenMobile.name = "mobile"; // Input name for Google Form
+        hiddenMobile.value = client.number;
+
+        const hiddenStatus = document.createElement("input");
+        hiddenStatus.type = "hidden";
+        hiddenStatus.name = "status"; // Input name for Google Form
+        form.appendChild(hiddenNo);
+        form.appendChild(hiddenName);
+        form.appendChild(hiddenMobile);
+        form.appendChild(hiddenStatus);
+
+        // Update hidden status on change
+        select.onchange = () => {
+            hiddenStatus.value = select.value;
+        };
+        
+        const submitBtn = document.createElement("button");
+        submitBtn.type = "submit";
+        submitBtn.classList.add("submit-btn");
+        submitBtn.textContent = "Submit";
+
+        form.appendChild(submitBtn);
+        actionCell.appendChild(form);
+
+        // Append cells to row
+        row.appendChild(noCell);
+        row.appendChild(nameCell);
+        row.appendChild(numberCell);
+        row.appendChild(statusCell);
+        row.appendChild(actionCell);
+
+        // Append row to table
+        table.appendChild(row);
+    });
+</script>
+
+</body>
+</html>
